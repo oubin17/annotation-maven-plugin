@@ -12,14 +12,14 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @author oubin.ob
  * @version : DemoMojo.java v 0.1 2022/6/24 15:47 oubin.ob Exp $$
  */
-@Mojo(name = "hello")
+@Mojo(name = "facade")
 public class DemoMojo extends AbstractMojo {
 
     @Parameter(name = "name", defaultValue = "kiwi")
     private String name;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info("hello" + name);
+        getLog().info("execute field annotation" + name);
 
     }
 }
