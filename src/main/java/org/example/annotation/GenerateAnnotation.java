@@ -3,6 +3,7 @@ package org.example.annotation;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,11 +24,21 @@ import java.util.stream.Collectors;
  * @author oubin.ob
  * @version : GenerateAnnotation.java v 0.1 2022/6/24 16:36 oubin.ob Exp $$
  */
+
+/**
+ * @requiresDependencyResolution compile
+ */
 @Mojo(name = "field")
 public class GenerateAnnotation extends AbstractMojo {
 
     @Parameter(name = "filePath", defaultValue = "null")
     private String filePath;
+
+    @Parameter(defaultValue = "${project}")
+    private MavenProject project;
+
+    @Parameter( defaultValue = "${project.compileClasspathElements}", readonly = true, required = true )
+    private List<String> compilePath;
 
 
     public void execute() {
@@ -38,14 +51,49 @@ public class GenerateAnnotation extends AbstractMojo {
             e.printStackTrace();
         }
 
+//        try {
+//            Class<?> aClass = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
+//
+//            getLog().info("instance class " + Arrays.toString(aClass.getDeclaredFields()));
+//
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
     }
 
+    private ClassLoader getClassLoader(MavenProject project)
+    {
+        try
+        {
+            // 所有的类路径环境，也可以直接用 compilePath
+            List classpathElements = project.getCompileClasspathElements();
+
+            classpathElements.add( project.getBuild().getOutputDirectory() );
+            classpathElements.add( project.getBuild().getTestOutputDirectory() );
+            // 转为 URL 数组
+            URL urls[] = new URL[classpathElements.size()];
+            for ( int i = 0; i < classpathElements.size(); ++i )
+            {
+                urls[i] = new File( (String) classpathElements.get( i ) ).toURL();
+            }
+            // 自定义类加载器
+            return new URLClassLoader( urls, this.getClass().getClassLoader() );
+        }
+        catch ( Exception e )
+        {
+            getLog().debug( "Couldn't get the classloader." );
+            return this.getClass().getClassLoader();
+        }
+    }
+
+
     private void generateAnnotation(String context) throws ClassNotFoundException, IOException {
-        Class<?> clazz = Class.forName("com.example.demo.inter.QueryMemberRequest");
+        Class<?> clazz = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
 
-        List<String> fieldList = new ArrayList<String>();
+        List<String> fieldList = new ArrayList<>();
 
-        Map<String, String> fieldAnnotationMap = new HashMap<String, String>();
+        Map<String, String> fieldAnnotationMap = new HashMap<>();
 
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field field : declaredFields) {
