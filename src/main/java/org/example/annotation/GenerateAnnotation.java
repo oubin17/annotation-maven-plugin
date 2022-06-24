@@ -8,10 +8,7 @@ import org.apache.maven.project.MavenProject;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,7 +34,7 @@ public class GenerateAnnotation extends AbstractMojo {
     @Parameter(defaultValue = "${project}")
     private MavenProject project;
 
-    @Parameter( defaultValue = "${project.compileClasspathElements}", readonly = true, required = true )
+    @Parameter(defaultValue = "${project.compileClasspathElements}", readonly = true, required = true)
     private List<String> compilePath;
 
 
@@ -62,33 +59,27 @@ public class GenerateAnnotation extends AbstractMojo {
 
     }
 
-    private ClassLoader getClassLoader(MavenProject project)
-    {
-        try
-        {
+    private ClassLoader getClassLoader(MavenProject project) {
+        try {
             // 所有的类路径环境，也可以直接用 compilePath
             List classpathElements = project.getCompileClasspathElements();
 
-            classpathElements.add( project.getBuild().getOutputDirectory() );
-            classpathElements.add( project.getBuild().getTestOutputDirectory() );
+            classpathElements.add(project.getBuild().getOutputDirectory());
+            classpathElements.add(project.getBuild().getTestOutputDirectory());
             // 转为 URL 数组
             URL urls[] = new URL[classpathElements.size()];
-            for ( int i = 0; i < classpathElements.size(); ++i )
-            {
-                urls[i] = new File( (String) classpathElements.get( i ) ).toURL();
+            for (int i = 0; i < classpathElements.size(); ++i) {
+                urls[i] = new File((String) classpathElements.get(i)).toURL();
             }
             // 自定义类加载器
-            return new URLClassLoader( urls, this.getClass().getClassLoader() );
-        }
-        catch ( Exception e )
-        {
-            getLog().debug( "Couldn't get the classloader." );
+            return new URLClassLoader(urls, this.getClass().getClassLoader());
+        } catch (Exception e) {
+            getLog().debug("Couldn't get the classloader.");
             return this.getClass().getClassLoader();
         }
     }
 
-
-    private void generateAnnotation(String context) throws ClassNotFoundException, IOException {
+    private void generateAnnotation(List<String> context) throws ClassNotFoundException, IOException {
         Class<?> clazz = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
 
         List<String> fieldList = new ArrayList<>();
@@ -104,33 +95,29 @@ public class GenerateAnnotation extends AbstractMojo {
             }
 
         }
-
-        String[] splits = context.split("\n");
-
         boolean flag1 = false;
-        for (int i = 0; i < splits.length; i++) {
-            splits[i] = splits[i] + "\r\n";
-            if (splits[i].contains("* ** start validator")) {
-                splits[i - 1] = splits[i - 1] + "* ** validator";
-                splits[i - 2] = splits[i - 2] + "* ** validator";
+        for (int i = 0; i < context.size(); i++) {
+            context.set(i, context.get(i) + "\r\n");
+            if (context.get(i).contains("* ** start validator")) {
+                context.set(i - 1, context.get(i - 1) + "* ** validator");
+                context.set(i - 2, context.get(i - 2) + "* ** validator");
                 flag1 = true;
 
             }
             if (flag1) {
-                splits[i] = splits[i] + "* ** validator";
+                context.set(i, context.get(i) + "* ** validator");
             }
-            if (splits[i].contains("* ** end validator")) {
-                splits[i + 1] = splits[i + 1] + "* ** validator";
+            if (context.get(i).contains("* ** end validator")) {
+                context.set(i + 1, context.get(i + 1) + "* ** validator");
                 i++;
                 flag1 = false;
             }
 
         }
 
-        List<String> collect = Arrays.stream(splits).filter(str -> !str.contains("* ** validator")).collect(Collectors.toList());
+        List<String> collect = context.stream().filter(str -> !str.contains("* ** validator")).collect(Collectors.toList());
 
         LinkedList<String> linkedList = new LinkedList<>(collect);
-
 
         LinkedList<String> realLinkedList = new LinkedList<>(collect);
 
@@ -161,7 +148,7 @@ public class GenerateAnnotation extends AbstractMojo {
 
     public static String generateExplain(Field field) {
 
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder(256);
 
         stringBuilder.append("    /**\r\n" +
                 "     *\r\n" +
@@ -188,10 +175,16 @@ public class GenerateAnnotation extends AbstractMojo {
 
     }
 
+    /**
+     * write context to file
+     *
+     * @param fileContext
+     * @throws IOException
+     */
     private void writeFile(LinkedList<String> fileContext) throws IOException {
 
         File file = new File(filePath);
-        FileWriter fileWriter = new FileWriter(file.getName());
+        FileWriter fileWriter = new FileWriter(file.getAbsolutePath());
         for (String context : fileContext) {
             fileWriter.write(context);
         }
@@ -199,30 +192,30 @@ public class GenerateAnnotation extends AbstractMojo {
 
     }
 
-
     /**
      * get file context
      *
      * @param filePath
      * @return
      */
-    private String getFileContext(String filePath) {
+    private List<String> getFileContext(String filePath) {
         File file = new File(filePath);
-        Long fileLength = file.length();
 
-        byte[] fileContent = new byte[fileLength.intValue()];
+        List<String> fileContents = new ArrayList<>();
+
         try {
             FileInputStream in = new FileInputStream(file);
-            in.read(fileContent);
-            in.close();
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = br.readLine()) != null) {
+                fileContents.add(line);
+            }
+            br.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        String fileStr = new String(fileContent);
-        System.out.println(fileStr);
-        return fileStr;
+        return fileContents;
     }
 
 }
