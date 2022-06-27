@@ -113,7 +113,7 @@ public class GenerateAnnotation extends AbstractMojo {
         boolean flag1 = false;
         for (int i = 0; i < context.size(); i++) {
             context.set(i, context.get(i) + "\r\n");
-            if (context.get(i).contains("* ** start validator")) {
+            if (context.get(i).contains("* <div style=\"display:none\">start validator</div>")) {
                 context.set(i - 1, context.get(i - 1) + "* ** validator");
                 context.set(i - 2, context.get(i - 2) + "* ** validator");
                 flag1 = true;
@@ -122,7 +122,7 @@ public class GenerateAnnotation extends AbstractMojo {
             if (flag1) {
                 context.set(i, context.get(i) + "* ** validator");
             }
-            if (context.get(i).contains("* ** end validator")) {
+            if (context.get(i).contains("* <div style=\"display:none\">end validator</div>")) {
                 context.set(i + 1, context.get(i + 1) + "* ** validator");
                 i++;
                 flag1 = false;
@@ -170,27 +170,26 @@ public class GenerateAnnotation extends AbstractMojo {
 
         stringBuilder.append("    /**\r\n" +
                 "     *\r\n" +
-                "     * ** start validator\r\n");
+                "     * <div style=\"display:none\">start validator</div>\r\n");
 
         NotNull notNull = field.getAnnotation(NotNull.class);
         if (notNull != null) {
-            stringBuilder.append("     * NotNull : true\r\n");
+            stringBuilder.append("     * <p>NotNull : true</p>\r\n");
         }
 
         NotBlank notBlank = field.getAnnotation(NotBlank.class);
         if (notBlank != null) {
-            stringBuilder.append("     * NotBlank : true\r\n");
+            stringBuilder.append("     * <p>NotBlank : true</p>\r\n");
         }
 
         Min min = field.getAnnotation(Min.class);
         if (min != null) {
-            stringBuilder.append("     * Min : value = ").append(min.value()).append(", message = ").append(min.message()).append("\r\n");
+            stringBuilder.append("     * <p>Min : value = ").append(min.value()).append(", message = ").append(min.message()).append("</p>\r\n");
         }
-        stringBuilder.append("     * ** end validator\r\n");
+        stringBuilder.append("     * <div style=\"display:none\">end validator</div>\r\n");
         stringBuilder.append("     */\r\n");
 
         return stringBuilder.toString();
-
     }
 
     /**

@@ -22,13 +22,27 @@ public class QueryMemberRequest {
 
 
 
+    /**
+     *
+     * ** start validator
+     * NotNull : true
+     * NotBlank : true
+     * Min : value = 10, message = ipRoleId not null
+     * ** end validator
+     */
     @NotNull
     @NotBlank
-    @Min(value = 10, message = "1")
+    @Min(value = 10, message = "ipRoleId not null")
     private String ipRoleId;
 
 
-    @Min(value = 23, message = "11")
+    /**
+     *
+     * ** start validator
+     * Min : value = 23, message = 1
+     * ** end validator
+     */
+    @Min(value = 23, message = "1")
     private String type;
 
     /**
