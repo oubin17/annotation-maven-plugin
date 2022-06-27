@@ -49,9 +49,23 @@ public class GenerateAnnotation extends AbstractMojo {
         }
 
 //        try {
-//            Class<?> aClass = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
+//            Class<?> clazz = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
 //
-//            getLog().info("instance class " + Arrays.toString(aClass.getDeclaredFields()));
+//            List<String> fieldList = new ArrayList<>();
+//
+//            Map<String, String> fieldAnnotationMap = new HashMap<>();
+//
+//            Field[] declaredFields = clazz.getDeclaredFields();
+//            for (Field field : declaredFields) {
+//                String fieldStr = "private-" + field.getType().getSimpleName() + "-" + field.getName();
+//                fieldList.add(fieldStr);
+//                if (field.getAnnotations().length != 0) {
+//                    fieldAnnotationMap.put(fieldStr, generateExplain(field));
+//                }
+//
+//            }
+//            fieldAnnotationMap.forEach((str1, str2) -> getLog().info(str1 + " ///// " + str2));
+//
 //
 //        } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
@@ -95,6 +109,7 @@ public class GenerateAnnotation extends AbstractMojo {
             }
 
         }
+
         boolean flag1 = false;
         for (int i = 0; i < context.size(); i++) {
             context.set(i, context.get(i) + "\r\n");
@@ -142,6 +157,9 @@ public class GenerateAnnotation extends AbstractMojo {
                 }
             }
         }
+
+        writeFile(realLinkedList);
+
 
         writeFile(realLinkedList);
     }

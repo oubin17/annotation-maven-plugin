@@ -74,7 +74,7 @@
             <artifactId>annotation-maven-plugin</artifactId>
             <version>1.0-SNAPSHOT</version>
             <configuration>
-                <filePath>/Users/oubin/demo_project/swagger_web/src/main/java/com/example/demo/inter/QueryMemberRequest.java</filePath>
+                <filePath>/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/QueryMemberRequest.java</filePath>
             </configuration>
         </plugin>
         <plugin>
