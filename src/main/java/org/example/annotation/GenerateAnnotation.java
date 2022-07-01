@@ -5,9 +5,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -93,8 +91,14 @@ public class GenerateAnnotation extends AbstractMojo {
         }
     }
 
-    private void generateAnnotation(List<String> context) throws ClassNotFoundException, IOException {
-        Class<?> clazz = getClassLoader(this.project).loadClass("com.example.demo.inter.QueryMemberRequest");
+    private void generateAnnotation(Map<String, Object> contentMap) throws ClassNotFoundException, IOException {
+
+        List<String> context = (List<String>) contentMap.get("content");
+        String packagePath = (String) contentMap.get("packagePath");
+        String className = (String) contentMap.get("className");
+
+        Class<?> clazz = getClassLoader(this.project).loadClass(packagePath + "." + className);
+
 
         List<String> fieldList = new ArrayList<>();
 
@@ -170,26 +174,46 @@ public class GenerateAnnotation extends AbstractMojo {
 
         stringBuilder.append("    /**\r\n" +
                 "     *\r\n" +
-                "     * <div style=\"display:none\">start validator</div>\r\n");
+                "     * <div style=\"display:none\">start validator</div>\r\n")
+                .append("     * <ul>\r\n");
 
         NotNull notNull = field.getAnnotation(NotNull.class);
         if (notNull != null) {
-            stringBuilder.append("     * <p>NotNull : true</p>\r\n");
+            stringBuilder.append("     *     <li>Not Null</li>\r\n");
+        }
+
+        Null isNull = field.getAnnotation(Null.class);
+        if (isNull != null) {
+            stringBuilder.append("     *     <li>Null</li>\r\n");
+        }
+
+        NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
+        if (notEmpty != null) {
+            stringBuilder.append("     *     <li>Not Empty</li>\r\n");
         }
 
         NotBlank notBlank = field.getAnnotation(NotBlank.class);
         if (notBlank != null) {
-            stringBuilder.append("     * <p>NotBlank : true</p>\r\n");
+            stringBuilder.append("     *     <li>Not Blank</li>\r\n");
         }
 
         Min min = field.getAnnotation(Min.class);
         if (min != null) {
-            stringBuilder.append("     * <p>Min : value = ").append(min.value()).append(", message = ").append(min.message()).append("</p>\r\n");
+            stringBuilder.append("     *     <li>value >= ").append(min.value()).append(", message = ").append(min.message()).append("</li>\r\n");
         }
+
+        Max max = field.getAnnotation(Max.class);
+        if (max != null) {
+            stringBuilder.append("     *     <li>value <= ").append(max.value()).append(", message = ").append(max.message()).append("</li>\r\n");
+        }
+
+        stringBuilder.append("     * </ul>\r\n");
         stringBuilder.append("     * <div style=\"display:none\">end validator</div>\r\n");
         stringBuilder.append("     */\r\n");
 
         return stringBuilder.toString();
+
+
     }
 
     /**
@@ -215,10 +239,15 @@ public class GenerateAnnotation extends AbstractMojo {
      * @param filePath
      * @return
      */
-    private List<String> getFileContext(String filePath) {
+    private Map<String, Object> getFileContext(String filePath) {
+        Map<String, Object> contentMap = new HashMap<>();
+
         File file = new File(filePath);
 
         List<String> fileContents = new ArrayList<>();
+
+        String packagePath = null;
+        String className = null;
 
         try {
             FileInputStream in = new FileInputStream(file);
@@ -226,13 +255,30 @@ public class GenerateAnnotation extends AbstractMojo {
             String line;
             while ((line = br.readLine()) != null) {
                 fileContents.add(line);
+                if (line.contains("package") ) {
+                    String[] split = line.split("\\s+");
+                    if (split.length == 2) {
+                        packagePath = split[1].replace(";", "");
+                    }
+                }
+
+                if (line.contains("interface") || line.contains("class")) {
+                    String[] split = line.split("\\s+");
+                    if (split.length >= 3) {
+                        className = split[2];
+                    }
+                }
             }
             br.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return fileContents;
+        contentMap.put("packagePath", packagePath);
+        contentMap.put("className", className);
+        contentMap.put("content", fileContents);
+
+        return contentMap;
     }
 
 }

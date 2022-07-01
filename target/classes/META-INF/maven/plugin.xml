@@ -96,12 +96,6 @@
       <version>3.5.2</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <type>jar</type>
-      <version>3.5</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
       <type>jar</type>
@@ -292,6 +286,12 @@
       <artifactId>classmate</artifactId>
       <type>jar</type>
       <version>1.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <type>jar</type>
+      <version>3.12.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>

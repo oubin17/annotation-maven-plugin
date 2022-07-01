@@ -20,15 +20,15 @@ public class QueryMemberRequest {
 //     */
 //    private static final String STATIC_STRING = "static_string";
 
-
-
     /**
      *
-     * ** start validator
-     * NotNull : true
-     * NotBlank : true
-     * Min : value = 10, message = ipRoleId not null
-     * ** end validator
+     * <div style="display:none">start validator</div>
+     * <ul>
+     *     <li>Not Null</li>
+     *     <li>Not Blank</li>
+     *     <li>value >= 10, message = ipRoleId not null</li>
+     * </ul>
+     * <div style="display:none">end validator</div>
      */
     @NotNull
     @NotBlank
@@ -41,6 +41,14 @@ public class QueryMemberRequest {
      * ** start validator
      * Min : value = 23, message = 1
      * ** end validator
+     */
+    /**
+     *
+     * <div style="display:none">start validator</div>
+     * <ul>
+     *     <li>value >= 23, message = 1</li>
+     * </ul>
+     * <div style="display:none">end validator</div>
      */
     @Min(value = 23, message = "1")
     private String type;
