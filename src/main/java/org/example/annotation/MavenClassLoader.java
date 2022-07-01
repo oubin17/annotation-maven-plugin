@@ -15,15 +15,13 @@ import java.util.List;
  */
 public class MavenClassLoader {
 
-
     private MavenProject project;
 
     /**
      *
-     * @param project
      * @return
      */
-    protected ClassLoader getClassLoader(MavenProject project) {
+    protected ClassLoader getClassLoader() {
         try {
             // 所有的类路径环境，也可以直接用 compilePath
             List classpathElements = project.getCompileClasspathElements();

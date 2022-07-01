@@ -62,13 +62,32 @@ public class GenerateAnnotation extends AbstractMojo {
 
     }
 
-    private void generateAnnotation(Map<String, Object> contentMap, MavenClassLoader mavenClassLoader) throws ClassNotFoundException, IOException {
+    /**
+     * 用来测试插件能力
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void testExecute() throws IOException, ClassNotFoundException {
+        Map<String, Object> fileContext = FileHandler.getFileContext(filePath);
+        generateAnnotation(fileContext, new Object());
+
+    }
+
+    private void generateAnnotation(Map<String, Object> contentMap, Object object) throws ClassNotFoundException, IOException {
 
         List<String> context = (List<String>) contentMap.get("content");
         String packagePath = (String) contentMap.get("packagePath");
         String className = (String) contentMap.get("className");
 
-        Class<?> clazz = mavenClassLoader.getClassLoader(this.project).loadClass(packagePath + "." + className);
+        Class<?> clazz;
+        if (object instanceof MavenClassLoader) {
+            MavenClassLoader mavenClassLoader = (MavenClassLoader) object;
+            clazz = mavenClassLoader.getClassLoader().loadClass(packagePath + "." + className);
+        } else {
+            clazz = Class.forName(packagePath + "." + className);
+        }
+
 
         List<String> fieldList = new ArrayList<>();
 
@@ -114,4 +133,21 @@ public class GenerateAnnotation extends AbstractMojo {
         FileHandler.writeFile(realLinkedList, filePath);
     }
 
+    /**
+     * Getter method for property <tt>filePath</tt>.
+     *
+     * @return property value of filePath
+     */
+    public String getFilePath() {
+        return filePath;
+    }
+
+    /**
+     * Setter method for property <tt>filePath</tt>.
+     *
+     * @param filePath value to be assigned to property filePath
+     */
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 }
