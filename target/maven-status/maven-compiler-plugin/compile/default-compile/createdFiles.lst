@@ -1,3 +1,6 @@
-org/example/QueryMemberRequest.class
+org/example/annotation/AnnotationGenerateHandler.class
+org/example/annotation/MavenClassLoader.class
+org/example/request/QueryMemberRequest.class
 org/example/DemoMojo.class
 org/example/annotation/GenerateAnnotation.class
+org/example/annotation/FileHandler.class

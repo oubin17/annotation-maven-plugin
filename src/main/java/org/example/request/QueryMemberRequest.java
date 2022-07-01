@@ -1,4 +1,4 @@
-package org.example;
+package org.example.request;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -15,42 +15,30 @@ import javax.validation.constraints.NotNull;
 public class QueryMemberRequest {
 
 
-//    /**
-//     * {@value STATIC_STRING}
-//     */
-//    private static final String STATIC_STRING = "static_string";
-
     /**
      *
      * <div style="display:none">start validator</div>
      * <ul>
      *     <li>Not Null</li>
      *     <li>Not Blank</li>
-     *     <li>value >= 10, message = ipRoleId not null</li>
+     *     <li>value >= 10000, message = ipRoleId not null</li>
      * </ul>
      * <div style="display:none">end validator</div>
      */
     @NotNull
     @NotBlank
-    @Min(value = 10, message = "ipRoleId not null")
+    @Min(value = 10000, message = "ipRoleId not null")
     private String ipRoleId;
 
-
-    /**
-     *
-     * ** start validator
-     * Min : value = 23, message = 1
-     * ** end validator
-     */
     /**
      *
      * <div style="display:none">start validator</div>
      * <ul>
-     *     <li>value >= 23, message = 1</li>
+     *     <li>value >= 2311, message = 1</li>
      * </ul>
      * <div style="display:none">end validator</div>
      */
-    @Min(value = 23, message = "1")
+    @Min(value = 2311, message = "1")
     private String type;
 
     /**

@@ -1,3 +1,6 @@
+/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/annotation/MavenClassLoader.java
+/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/annotation/AnnotationGenerateHandler.java
+/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/annotation/FileHandler.java
 /Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/annotation/GenerateAnnotation.java
 /Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/DemoMojo.java
-/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/QueryMemberRequest.java
+/Users/oubin/demo_project/annotation-maven-plugin/src/main/java/org/example/request/QueryMemberRequest.java
