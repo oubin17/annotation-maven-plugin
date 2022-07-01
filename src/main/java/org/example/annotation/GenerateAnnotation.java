@@ -29,6 +29,12 @@ public class GenerateAnnotation extends AbstractMojo {
 
         MavenClassLoader mavenClassLoader = new MavenClassLoader(project);
 
+
+        System.out.println("compilePath:" + compilePath);
+
+        filePath = compilePath.get(0).replace("/target/classes", "") + "/src/main/java/" + filePath;
+        System.out.println("filePath:" + filePath);
+
         try {
             generateAnnotation(FileHandler.getFileContext(filePath), mavenClassLoader);
         } catch (ClassNotFoundException e) {
@@ -62,18 +68,6 @@ public class GenerateAnnotation extends AbstractMojo {
 
     }
 
-    /**
-     * 用来测试插件能力
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public void testExecute() throws IOException, ClassNotFoundException {
-        Map<String, Object> fileContext = FileHandler.getFileContext(filePath);
-        generateAnnotation(fileContext, new Object());
-
-    }
-
     private void generateAnnotation(Map<String, Object> contentMap, Object object) throws ClassNotFoundException, IOException {
 
         List<String> context = (List<String>) contentMap.get("content");
@@ -87,7 +81,6 @@ public class GenerateAnnotation extends AbstractMojo {
         } else {
             clazz = Class.forName(packagePath + "." + className);
         }
-
 
         List<String> fieldList = new ArrayList<>();
 
@@ -131,6 +124,18 @@ public class GenerateAnnotation extends AbstractMojo {
             }
         }
         FileHandler.writeFile(realLinkedList, filePath);
+    }
+
+    /**
+     * 用来测试插件能力
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void testExecute() throws IOException, ClassNotFoundException {
+        Map<String, Object> fileContext = FileHandler.getFileContext(filePath);
+        generateAnnotation(fileContext, new Object());
+
     }
 
     /**

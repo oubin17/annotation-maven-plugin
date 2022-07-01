@@ -14,8 +14,9 @@ import javax.validation.constraints.NotNull;
  */
 public class QueryMemberRequest {
 
-
     /**
+     *
+     * this is ipRoleId
      *
      * <div style="display:none">start validator</div>
      * <ul>
